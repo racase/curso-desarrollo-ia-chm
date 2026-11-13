@@ -6,10 +6,13 @@ resto de funcionalidad las construiremos en clase con OpenSpec y Codex.
 
 ## Requisitos
 
-- Docker Desktop (o Docker dentro de WSL2)
+- Docker Desktop (o Docker dentro de WSL2) o Podman
 
-Nada más: PHP y Composer van dentro del contenedor. No hace falta instalarlos en tu equipo,
-ni tampoco Node.
+Para la aplicación, nada más: PHP y Composer van dentro del contenedor y no hace falta
+instalarlos en tu equipo. Node tampoco lo necesita la aplicación, pero sí Codex y OpenSpec
+(ver el `README.md` de la raíz).
+
+Con Podman, sustituye `docker` por `podman` en todos los comandos de este documento.
 
 ## Arranque
 
@@ -89,10 +92,28 @@ No hay, a propósito:
 - Permisos por rol.
 - OpenSpec: lo inicializaremos en clase con `openspec init`.
 
+## Configuración de agentes
+
+| Ruta | Lo usa | Contenido |
+|---|---|---|
+| `AGENTS.md` | Codex y OpenCode | Instrucciones del proyecto: mapa, comandos, convenciones |
+| `.agents/skills/` | Codex y OpenCode | Skills del proyecto (vacío de momento) |
+| `.codex/config.toml` | Codex | Ajustes de Codex (sin ajustes activos de momento) |
+| `.claude/` | Claude Code | `CLAUDE.md`, que importa los `AGENTS.md`, y `settings.json` |
+| `.opencode/opencode.json` | OpenCode | Ajustes de OpenCode |
+
+El curso se hace con Codex. Ábrelo desde esta carpeta y, la primera vez, acepta confiar en
+ella: si no, Codex ignora `.codex/`.
+
 ## Estructura
 
 ```
 web/
+├── AGENTS.md              instrucciones para los agentes
+├── .agents/skills/        skills del proyecto
+├── .codex/                ajustes de Codex
+├── .claude/               ajustes de Claude Code
+├── .opencode/             ajustes de OpenCode
 ├── app/
 │   ├── Enums/UserRole.php
 │   ├── Models/User.php

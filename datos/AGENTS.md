@@ -9,11 +9,12 @@ Es un proyecto de formación: prioriza código claro, convencional y fácil de r
 - `tests/`: pytest. Los tests con base de datos llevan el marcador `integration`.
 - `db/init/`: esquema y datos de ejemplo. Solo se ejecutan al crear el volumen de Docker.
 - `openspec/`: especificaciones y cambios (cuando exista).
+- `.agents/skills/`: skills del proyecto (cuando existan).
 
 ## Comandos
 
 - Instalar: `uv sync`
-- Base de datos: `docker compose up -d`
+- Base de datos: `docker compose up -d` (con Podman, `podman compose up -d`)
 - Tests: `uv run pytest`
 - Lint y formato: `uv run ruff check .` y `uv run ruff format .`
 - Comprobación rápida: `uv run python -m infradata check`

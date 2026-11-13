@@ -5,9 +5,12 @@ No incluye ninguna analítica: la construiremos en clase con OpenSpec y Codex.
 
 ## Requisitos
 
-- Docker Desktop (o Docker dentro de WSL2)
+- Docker Desktop (o Docker dentro de WSL2) o Podman
 - Python 3.11 o superior
 - [uv](https://docs.astral.sh/uv/) (recomendado) o `pip`
+
+Con Podman, sustituye `docker` por `podman` en todos los comandos de este documento.
+Codex y OpenSpec se instalan aparte (ver el `README.md` de la raíz).
 
 ## Arranque
 
@@ -70,10 +73,28 @@ Dos tablas:
 Los datos son sintéticos y los mismos para todos. Contienen, a propósito, **periodos sin lecturas**
 y **algunos valores anómalos**: encontrarlos forma parte de los ejercicios.
 
+## Configuración de agentes
+
+| Ruta | Lo usa | Contenido |
+|---|---|---|
+| `AGENTS.md` | Codex y OpenCode | Instrucciones del proyecto: mapa, comandos, convenciones |
+| `.agents/skills/` | Codex y OpenCode | Skills del proyecto (vacío de momento) |
+| `.codex/config.toml` | Codex | Ajustes de Codex (sin ajustes activos de momento) |
+| `.claude/` | Claude Code | `CLAUDE.md`, que importa los `AGENTS.md`, y `settings.json` |
+| `.opencode/opencode.json` | OpenCode | Ajustes de OpenCode |
+
+El curso se hace con Codex. Ábrelo desde esta carpeta y, la primera vez, acepta confiar en
+ella: si no, Codex ignora `.codex/`.
+
 ## Estructura
 
 ```
 datos/
+├── AGENTS.md           instrucciones para los agentes
+├── .agents/skills/     skills del proyecto
+├── .codex/             ajustes de Codex
+├── .claude/            ajustes de Claude Code
+├── .opencode/          ajustes de OpenCode
 ├── db/init/            SQL que se ejecuta al crear la base de datos (esquema y datos)
 ├── src/infradata/      código del proyecto
 │   ├── config.py       configuración (DATABASE_URL)

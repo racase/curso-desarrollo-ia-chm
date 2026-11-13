@@ -19,3 +19,6 @@ node_modules/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Ajustes locales de agentes (personales, no se comparten)
+.claude/settings.local.json

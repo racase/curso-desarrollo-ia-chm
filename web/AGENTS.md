@@ -12,11 +12,13 @@ Es un proyecto de formación: prioriza código claro, convencional y fácil de r
 - `database/migrations`, `database/factories`, `database/seeders`.
 - `tests/Feature`, `tests/Unit`: PHPUnit.
 - `openspec/`: especificaciones y cambios (cuando exista).
+- `.agents/skills/`: skills del proyecto (cuando existan).
 
 ## Comandos
 
 PHP y Composer no están instalados en el equipo: viven en el contenedor `app`.
 Ejecuta siempre los comandos de PHP con el prefijo `docker compose exec app`.
+Si el equipo usa Podman en lugar de Docker, sustituye `docker` por `podman` en todos los comandos.
 
 - Arrancar: `docker compose up -d` (aplicación en http://localhost:8000/admin)
 - Tests: `docker compose exec app php artisan test`
