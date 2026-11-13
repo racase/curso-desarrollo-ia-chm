@@ -13,7 +13,7 @@ Antes de escribir, lee AGENTS.md y README.md para conocer el estado real del
 proyecto: qué existe ya (login, modelo User con roles, usuarios de prueba) y qué
 no existe todavía.
 
-Crea la carpeta docs/issues/ y dentro estos cinco ficheros:
+Crea la carpeta docs/issues/ y dentro estos seis ficheros:
 
 1. 01-alta-de-incidencias.md
    Modelo de incidencia con título, descripción, estado, prioridad y solicitante.
@@ -30,11 +30,16 @@ Crea la carpeta docs/issues/ y dentro estos cinco ficheros:
    Comentarios de los usuarios en la ficha de una incidencia, con autor y fecha.
    Depende del issue 1.
 
-4. 04-sedes-y-activos.md
+4. 04-gestion-de-usuarios.md
+   Gestión de usuarios desde el panel, accesible solo para administradores.
+   Listado, alta, edición y eliminación de usuarios, con asignación de los roles
+   administrador, técnico o solicitante. No tiene dependencias.
+
+5. 05-sedes-y-activos.md
    Sedes y activos, y vincular cada incidencia a un activo. Depende del issue 1
    y modifica su comportamiento.
 
-5. 05-widget-incidencias-por-estado.md
+6. 06-widget-incidencias-por-estado.md
    Widget en el panel con el número de incidencias abiertas por estado.
    Depende del issue 1.
 
