@@ -1,12 +1,14 @@
 # Prompt para generar el backlog de InfraTicket
 
 Prompt para ejecutar con Codex abierto dentro de `web/`. Genera los issues del backlog
-en `docs/issues/`, uno por fichero. Si la carpeta ya existe, bórrala o renómbrala antes
-para comparar el resultado.
+en `docs/issues/`, uno por fichero y con contenido de PRD ligero. Si la carpeta ya
+existe, bórrala o renómbrala antes para comparar el resultado.
 
 ```text
 Vas a preparar el backlog inicial de InfraTicket como ficheros Markdown, uno por
-issue, para subirlos después a GitHub. No implementes nada: no toques código,
+issue. El contenido de cada issue debe ser un PRD ligero que sirva como punto de
+partida para debatir y concretar el producto, no una historia de usuario ni una
+especificación de implementación ya cerrada. No implementes nada: no toques código,
 migraciones ni tests, y no crees la carpeta openspec/.
 
 Antes de escribir, lee AGENTS.md y README.md para conocer el estado real del
@@ -51,11 +53,18 @@ labels: [feature, web]
 depends_on: [<números de los issues de los que depende, o vacío>]
 ---
 
-## Contexto
-Dos o tres frases: qué problema resuelve y para quién.
+## Resumen
+Una descripción breve de la capacidad de producto y del valor que aporta.
 
-## Historia de usuario
-Como <rol>, quiero <acción>, para <beneficio>. Una por rol afectado.
+## Problema y oportunidad
+Qué necesidad existe, a quién afecta y por qué merece resolverse.
+
+## Objetivos
+Resultados que se quieren conseguir. No los conviertas en tareas técnicas.
+
+## Usuarios afectados
+Roles implicados y sus necesidades principales, sin redactar historias de usuario
+formales del tipo «Como…, quiero…, para…».
 
 ## Alcance
 Lista de lo que incluye, en términos de comportamiento observable.
@@ -63,21 +72,27 @@ Lista de lo que incluye, en términos de comportamiento observable.
 ## Fuera de alcance
 Lista de lo que no incluye, para evitar que el cambio crezca.
 
-## Criterios de aceptación
-Lista numerada de comprobaciones verificables, redactadas como
-«Dado… cuando… entonces…». Usa los roles y los usuarios de prueba que existen.
+## Requisitos de producto
+Lista breve de comportamientos y reglas de negocio necesarios. Mantén el nivel de
+detalle propio de un PRD y no escribas casos de prueba ni escenarios
+«Dado… cuando… entonces…».
 
-## Notas
-Dudas abiertas o decisiones que habrá que tomar en la especificación.
+## Criterios de éxito
+Señales observables que permitirán valorar si la capacidad resuelve el problema,
+sin convertirlas en criterios de aceptación exhaustivos.
+
+## Riesgos y preguntas abiertas
+Supuestos, dudas y decisiones que deberán concretarse antes de implementar.
 
 Reglas:
 - Escribe en español, con el vocabulario del proyecto.
 - Describe el qué, no el cómo: nada de nombres de clases, tablas, columnas ni
   paquetes. Eso se decide después, en la especificación.
-- Cada issue debe poder hacerse en un solo cambio. Si uno queda demasiado grande,
-  dilo en «Notas» en lugar de partirlo.
-- En el issue 2, deja «Criterios de aceptación» con un único punto de ejemplo y la
-  nota «A completar por el equipo antes de implementar».
+- Mantén cada issue conciso y orientado al producto, con estructura de PRD ligero.
+  No lo conviertas en una lista de tareas ni intentes cerrar todos los detalles de
+  implementación.
+- Si una capacidad parece demasiado grande, indícalo en «Riesgos y preguntas
+  abiertas» en lugar de dividirla por tu cuenta.
 - No inventes funcionalidad que no esté en la lista anterior.
 
 Al terminar, crea docs/issues/README.md con una tabla (número, título,
