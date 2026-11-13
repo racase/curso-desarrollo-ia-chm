@@ -1,0 +1,22 @@
+services:
+  db:
+    image: docker.io/timescale/timescaledb:latest-pg16
+    container_name: infradata-db
+    environment:
+      POSTGRES_USER: infradata
+      POSTGRES_PASSWORD: infradata
+      POSTGRES_DB: infradata
+    ports:
+      # 5433 en el host para no chocar con el PostgreSQL de web/ (5432)
+      - "5433:5432"
+    volumes:
+      - infradata-pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infradata -d infradata"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  infradata-pgdata:

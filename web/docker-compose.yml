@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    container_name: infraticket-app
+    volumes:
+      - .:/app
+      # Dependencies live in a Docker volume, not in the Windows folder: unpacking
+      # thousands of small files through the shared folder is slow and can fail.
+      - infraticket-vendor:/app/vendor
+    ports:
+      - "8000:8000"
+    environment:
+      # Inside Docker the database is reached by its service name.
+      DB_HOST: db
+      COMPOSER_PROCESS_TIMEOUT: 0
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: docker.io/library/postgres:16
+    container_name: infraticket-db
+    environment:
+      POSTGRES_USER: infraticket
+      POSTGRES_PASSWORD: infraticket
+      POSTGRES_DB: infraticket
+    ports:
+      - "5432:5432"
+    volumes:
+      - infraticket-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infraticket -d infraticket"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  infraticket-pgdata:
+  infraticket-vendor:
