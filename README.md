@@ -25,4 +25,3 @@ OpenSpec no está inicializado. Lo haremos juntos en clase con `openspec init`.
 
 - No subas ficheros `.env` ni credenciales reales.
 - Trabaja siempre en una rama, nunca directamente en `main`.
-- Anota en `NOTAS-ENTORNO.md` de cada proyecto cualquier problema de instalación que encuentres.
