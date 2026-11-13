@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
 
             User::factory()->create($user);
         }
+
+        $this->call([SiteSeeder::class, IncidentSeeder::class]);
     }
 }
