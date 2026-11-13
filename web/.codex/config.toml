@@ -1,0 +1,14 @@
+# Configuración de Codex para InfraTicket (web/).
+#
+# Codex solo carga este fichero si el proyecto está marcado como de confianza.
+# Tiene prioridad sobre ~/.codex/config.toml. Las claves de proveedor, perfiles
+# y notificaciones se ignoran aquí: van en la configuración de usuario.
+#
+# De momento no hay ningún ajuste activo. Ejemplos de lo que se puede fijar:
+#
+# approval_policy = "on-request"
+# sandbox_mode = "workspace-write"
+#
+# [mcp_servers.nombre]
+# command = "npx"
+# args = ["-y", "paquete-del-servidor"]
