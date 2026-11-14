@@ -35,6 +35,14 @@ class Incident extends Model
         return $this->hasMany(IncidentStatusChange::class)->oldest();
     }
 
+    /** @return HasMany<IncidentComment, $this> */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(IncidentComment::class)
+            ->oldest()
+            ->orderBy('id');
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {

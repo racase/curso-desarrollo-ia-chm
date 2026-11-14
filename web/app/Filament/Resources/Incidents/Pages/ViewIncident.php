@@ -6,10 +6,12 @@ use App\Enums\UserRole;
 use App\Filament\Resources\Incidents\IncidentResource;
 use App\Models\Incident;
 use App\Models\User;
+use App\Services\IncidentCommentService;
 use App\Services\IncidentWorkflow;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Gate;
 
@@ -66,6 +68,25 @@ class ViewIncident extends ViewRecord
                         $record,
                         $nextStatus,
                     );
+                }),
+            Action::make('addComment')
+                ->label('Añadir comentario')
+                ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                ->visible(fn (Incident $record): bool => $this->currentUserCan('comment', $record))
+                ->schema([
+                    Textarea::make('content')
+                        ->label('Comentario')
+                        ->required()
+                        ->rows(5),
+                ])
+                ->action(function (array $data, Incident $record): void {
+                    app(IncidentCommentService::class)->publish(
+                        $this->user(),
+                        $record,
+                        $data['content'],
+                    );
+
+                    $record->unsetRelation('comments');
                 }),
         ];
     }

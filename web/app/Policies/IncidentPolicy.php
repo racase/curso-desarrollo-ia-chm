@@ -54,6 +54,11 @@ class IncidentPolicy
                 && $incident->assigned_technician_id === $user->getKey());
     }
 
+    public function comment(User $user, Incident $incident): bool
+    {
+        return $this->view($user, $incident);
+    }
+
     /**
      * Determine whether the user can delete the model.
      */

@@ -52,6 +52,20 @@ class IncidentInfolist
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
+                RepeatableEntry::make('comments')
+                    ->label('Conversación')
+                    ->schema([
+                        TextEntry::make('content')
+                            ->label('Comentario')
+                            ->columnSpanFull(),
+                        TextEntry::make('author.name')
+                            ->label('Autor'),
+                        TextEntry::make('created_at')
+                            ->label('Publicado')
+                            ->dateTime('d/m/Y H:i'),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 }

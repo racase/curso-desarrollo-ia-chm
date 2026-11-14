@@ -9,6 +9,7 @@ use App\Filament\Resources\Incidents\Pages\CreateIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
 use App\Models\Incident;
+use App\Models\IncidentComment;
 use App\Models\IncidentStatusChange;
 use App\Models\User;
 use App\Services\IncidentWorkflow;
@@ -263,5 +264,106 @@ class IncidentResourceTest extends TestCase
                 ->assertActionDoesNotExist('edit')
                 ->assertActionDoesNotExist('delete');
         }
+    }
+
+    public function test_authorized_users_can_publish_comments_from_the_incident_view(): void
+    {
+        $requester = User::factory()->create();
+        $incident = Incident::factory()
+            ->forRequester($requester)
+            ->status(IncidentStatus::Closed)
+            ->create();
+        $users = [
+            $requester,
+            User::factory()->technician()->create(),
+            User::factory()->admin()->create(),
+        ];
+
+        foreach ($users as $index => $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertActionVisible('addComment')
+                ->callAction('addComment', data: [
+                    'content' => "Comentario {$index}",
+                ])
+                ->assertHasNoFormErrors();
+
+            $this->assertDatabaseHas(IncidentComment::class, [
+                'incident_id' => $incident->getKey(),
+                'author_id' => $user->getKey(),
+                'content' => "Comentario {$index}",
+            ]);
+        }
+
+        $this->assertSame(IncidentStatus::Closed, $incident->refresh()->status);
+    }
+
+    public function test_the_comment_action_requires_content(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $incident = Incident::factory()->create();
+        $this->actingAs($admin);
+
+        Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+            ->callAction('addComment', data: ['content' => null])
+            ->assertHasFormErrors(['content' => 'required']);
+
+        $this->assertDatabaseCount(IncidentComment::class, 0);
+    }
+
+    public function test_authorized_viewers_see_comments_in_stable_chronological_order(): void
+    {
+        $requester = User::factory()->create();
+        $technician = User::factory()->technician()->create(['name' => 'Técnica Teresa']);
+        $admin = User::factory()->admin()->create(['name' => 'Administrador Alberto']);
+        $incident = Incident::factory()->forRequester($requester)->create();
+        $publishedAt = now()->startOfMinute();
+        IncidentComment::factory()
+            ->forIncident($incident)
+            ->by($technician)
+            ->create([
+                'content' => 'Primera información',
+                'created_at' => $publishedAt,
+                'updated_at' => $publishedAt,
+            ]);
+        IncidentComment::factory()
+            ->forIncident($incident)
+            ->by($admin)
+            ->create([
+                'content' => 'Segunda información',
+                'created_at' => $publishedAt,
+                'updated_at' => $publishedAt,
+            ]);
+
+        foreach ([$requester, $technician, $admin] as $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertSee('Conversación')
+                ->assertSeeInOrder([
+                    'Primera información',
+                    'Técnica Teresa',
+                    'Segunda información',
+                    'Administrador Alberto',
+                ])
+                ->assertSee($publishedAt->format('d/m/Y H:i'))
+                ->assertActionDoesNotExist('editComment')
+                ->assertActionDoesNotExist('deleteComment');
+        }
+    }
+
+    public function test_a_requester_cannot_view_another_incidents_comments(): void
+    {
+        $requester = User::factory()->create();
+        $incident = Incident::factory()->create();
+        IncidentComment::factory()->forIncident($incident)->create([
+            'content' => 'Información privada de la incidencia',
+        ]);
+        $this->actingAs($requester);
+
+        $this->get(IncidentResource::getUrl('view', ['record' => $incident]))
+            ->assertNotFound()
+            ->assertDontSee('Información privada de la incidencia');
     }
 }
