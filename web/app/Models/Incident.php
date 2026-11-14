@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['title', 'description', 'status', 'priority', 'requester_id', 'assigned_technician_id'])]
+#[Fillable(['title', 'description', 'status', 'priority', 'requester_id', 'assigned_technician_id', 'asset_id'])]
 class Incident extends Model
 {
     /** @use HasFactory<IncidentFactory> */
@@ -27,6 +27,12 @@ class Incident extends Model
     public function assignedTechnician(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_technician_id')->withTrashed();
+    }
+
+    /** @return BelongsTo<Asset, $this> */
+    public function asset(): BelongsTo
+    {
+        return $this->belongsTo(Asset::class)->withTrashed();
     }
 
     /** @return HasMany<IncidentStatusChange, $this> */

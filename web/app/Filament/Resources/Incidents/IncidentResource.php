@@ -66,7 +66,7 @@ class IncidentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->with('asset.site');
         $user = Filament::auth()->user();
 
         if (! $user instanceof User) {

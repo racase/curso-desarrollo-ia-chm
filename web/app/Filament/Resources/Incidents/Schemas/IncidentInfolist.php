@@ -18,6 +18,15 @@ class IncidentInfolist
                     ->label('Título'),
                 TextEntry::make('requester.name')
                     ->label('Solicitante'),
+                TextEntry::make('asset.code')
+                    ->label('Código del activo')
+                    ->placeholder('Sin activo'),
+                TextEntry::make('asset.name')
+                    ->label('Activo')
+                    ->placeholder('Sin activo'),
+                TextEntry::make('asset.site.name')
+                    ->label('Sede')
+                    ->placeholder('Sin activo'),
                 TextEntry::make('assignedTechnician.name')
                     ->label('Técnico responsable')
                     ->placeholder('Sin asignar'),

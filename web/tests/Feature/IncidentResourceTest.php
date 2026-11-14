@@ -8,6 +8,7 @@ use App\Filament\Resources\Incidents\IncidentResource;
 use App\Filament\Resources\Incidents\Pages\CreateIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
+use App\Models\Asset;
 use App\Models\Incident;
 use App\Models\IncidentComment;
 use App\Models\IncidentStatusChange;
@@ -32,6 +33,7 @@ class IncidentResourceTest extends TestCase
     public function test_a_requester_can_create_an_incident_with_the_required_data(): void
     {
         $requester = User::factory()->create();
+        $asset = Asset::factory()->create();
         $this->actingAs($requester);
 
         Livewire::test(CreateIncident::class)
@@ -39,6 +41,7 @@ class IncidentResourceTest extends TestCase
                 'title' => 'Aire acondicionado averiado',
                 'description' => 'El equipo no enfría desde esta mañana.',
                 'priority' => IncidentPriority::High->value,
+                'asset_id' => $asset->getKey(),
             ])
             ->call('create')
             ->assertHasNoFormErrors();
@@ -49,10 +52,11 @@ class IncidentResourceTest extends TestCase
             'status' => IncidentStatus::Open->value,
             'priority' => IncidentPriority::High->value,
             'requester_id' => $requester->getKey(),
+            'asset_id' => $asset->getKey(),
         ]);
     }
 
-    public function test_the_create_form_requires_title_description_and_priority(): void
+    public function test_the_create_form_requires_title_description_priority_and_asset(): void
     {
         $this->actingAs(User::factory()->create());
 
@@ -61,12 +65,14 @@ class IncidentResourceTest extends TestCase
                 'title' => null,
                 'description' => null,
                 'priority' => null,
+                'asset_id' => null,
             ])
             ->call('create')
             ->assertHasFormErrors([
                 'title' => 'required',
                 'description' => 'required',
                 'priority' => 'required',
+                'asset_id' => 'required',
             ]);
     }
 

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\IncidentPriority;
 use App\Enums\IncidentStatus;
+use App\Models\Asset;
 use App\Models\Incident;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -40,6 +41,13 @@ class IncidentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'assigned_technician_id' => $technician->getKey(),
+        ]);
+    }
+
+    public function forAsset(Asset $asset): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'asset_id' => $asset->getKey(),
         ]);
     }
 

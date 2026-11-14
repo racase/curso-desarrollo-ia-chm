@@ -27,6 +27,15 @@ class IncidentsTable
                     ->badge(),
                 TextColumn::make('requester.name')
                     ->label('Solicitante'),
+                TextColumn::make('asset.code')
+                    ->label('Código del activo')
+                    ->placeholder('Sin activo'),
+                TextColumn::make('asset.name')
+                    ->label('Activo')
+                    ->placeholder('Sin activo'),
+                TextColumn::make('asset.site.name')
+                    ->label('Sede')
+                    ->placeholder('Sin activo'),
                 TextColumn::make('created_at')
                     ->label('Creada')
                     ->dateTime('d/m/Y H:i'),
