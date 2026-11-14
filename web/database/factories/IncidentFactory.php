@@ -36,6 +36,13 @@ class IncidentFactory extends Factory
         ]);
     }
 
+    public function assignedTo(User $technician): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'assigned_technician_id' => $technician->getKey(),
+        ]);
+    }
+
     public function status(IncidentStatus $status): static
     {
         return $this->state(fn (array $attributes) => [

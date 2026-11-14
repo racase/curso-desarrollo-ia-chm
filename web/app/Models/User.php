@@ -41,6 +41,18 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Incident::class, 'requester_id');
     }
 
+    /** @return HasMany<Incident, $this> */
+    public function assignedIncidents(): HasMany
+    {
+        return $this->hasMany(Incident::class, 'assigned_technician_id');
+    }
+
+    /** @return HasMany<IncidentStatusChange, $this> */
+    public function incidentStatusChanges(): HasMany
+    {
+        return $this->hasMany(IncidentStatusChange::class, 'changed_by_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

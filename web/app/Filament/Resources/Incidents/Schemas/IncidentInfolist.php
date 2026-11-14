@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Incidents\Schemas;
 
 use App\Enums\IncidentPriority;
 use App\Enums\IncidentStatus;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -17,6 +18,9 @@ class IncidentInfolist
                     ->label('Título'),
                 TextEntry::make('requester.name')
                     ->label('Solicitante'),
+                TextEntry::make('assignedTechnician.name')
+                    ->label('Técnico responsable')
+                    ->placeholder('Sin asignar'),
                 TextEntry::make('status')
                     ->label('Estado')
                     ->formatStateUsing(fn (IncidentStatus $state): string => $state->getLabel())
@@ -31,6 +35,23 @@ class IncidentInfolist
                 TextEntry::make('created_at')
                     ->label('Creada')
                     ->dateTime('d/m/Y H:i'),
+                RepeatableEntry::make('statusChanges')
+                    ->label('Historial de estados')
+                    ->schema([
+                        TextEntry::make('from_status')
+                            ->label('Estado anterior')
+                            ->formatStateUsing(fn (IncidentStatus $state): string => $state->getLabel()),
+                        TextEntry::make('to_status')
+                            ->label('Estado nuevo')
+                            ->formatStateUsing(fn (IncidentStatus $state): string => $state->getLabel()),
+                        TextEntry::make('changedBy.name')
+                            ->label('Modificado por'),
+                        TextEntry::make('created_at')
+                            ->label('Fecha')
+                            ->dateTime('d/m/Y H:i'),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
             ]);
     }
 }

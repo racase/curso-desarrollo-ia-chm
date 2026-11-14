@@ -9,7 +9,9 @@ use App\Filament\Resources\Incidents\Pages\CreateIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
 use App\Models\Incident;
+use App\Models\IncidentStatusChange;
 use App\Models\User;
+use App\Services\IncidentWorkflow;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -162,5 +164,104 @@ class IncidentResourceTest extends TestCase
 
         $this->get("/admin/incidents/{$incident->getRouteKey()}/edit")
             ->assertNotFound();
+    }
+
+    public function test_only_an_admin_sees_and_uses_the_technician_assignment_action(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $firstTechnician = User::factory()->technician()->create();
+        $secondTechnician = User::factory()->technician()->create();
+        $requester = User::factory()->create();
+        $incident = Incident::factory()->forRequester($requester)->create();
+        $this->actingAs($admin);
+
+        Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+            ->assertActionVisible('assignTechnician')
+            ->callAction('assignTechnician', data: ['technician_id' => $firstTechnician->getKey()])
+            ->assertHasNoFormErrors()
+            ->callAction('assignTechnician', data: ['technician_id' => $secondTechnician->getKey()])
+            ->assertHasNoFormErrors();
+
+        $this->assertTrue($incident->refresh()->assignedTechnician->is($secondTechnician));
+
+        foreach ([$firstTechnician, $requester] as $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertActionHidden('assignTechnician');
+        }
+    }
+
+    public function test_the_status_action_follows_the_complete_flow_and_disappears_when_closed(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $incident = Incident::factory()->create();
+        $this->actingAs($admin);
+
+        $component = Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()]);
+
+        foreach ([IncidentStatus::InProgress, IncidentStatus::Resolved, IncidentStatus::Closed] as $status) {
+            $component
+                ->assertActionVisible('advanceStatus')
+                ->callAction('advanceStatus')
+                ->assertHasNoFormErrors();
+
+            $this->assertSame($status, $incident->refresh()->status);
+        }
+
+        $component->assertActionHidden('advanceStatus');
+        $this->assertDatabaseCount(IncidentStatusChange::class, 3);
+    }
+
+    public function test_only_the_assigned_technician_or_an_admin_sees_the_status_action(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $assignedTechnician = User::factory()->technician()->create();
+        $otherTechnician = User::factory()->technician()->create();
+        $requester = User::factory()->create();
+        $incident = Incident::factory()
+            ->forRequester($requester)
+            ->assignedTo($assignedTechnician)
+            ->create();
+
+        foreach ([$admin, $assignedTechnician] as $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertActionVisible('advanceStatus');
+        }
+
+        foreach ([$otherTechnician, $requester] as $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertActionHidden('advanceStatus');
+        }
+    }
+
+    public function test_authorized_viewers_see_the_assignee_and_chronological_history(): void
+    {
+        $admin = User::factory()->admin()->create(['name' => 'Administradora Ana']);
+        $technician = User::factory()->technician()->create(['name' => 'Técnico Teo']);
+        $requester = User::factory()->create();
+        $incident = Incident::factory()
+            ->forRequester($requester)
+            ->assignedTo($technician)
+            ->create();
+        $workflow = app(IncidentWorkflow::class);
+
+        $workflow->transition($technician, $incident, IncidentStatus::InProgress);
+        $workflow->transition($technician, $incident, IncidentStatus::Resolved);
+
+        foreach ([$admin, $technician, $requester] as $user) {
+            $this->actingAs($user);
+
+            Livewire::test(ViewIncident::class, ['record' => $incident->getRouteKey()])
+                ->assertSee('Técnico Teo')
+                ->assertSee('Historial de estados')
+                ->assertSeeInOrder(['Abierta', 'En curso', 'En curso', 'Resuelta'])
+                ->assertActionDoesNotExist('edit')
+                ->assertActionDoesNotExist('delete');
+        }
     }
 }

@@ -20,4 +20,14 @@ enum IncidentStatus: string implements HasLabel
             self::Closed => 'Cerrada',
         };
     }
+
+    public function next(): ?self
+    {
+        return match ($this) {
+            self::Open => self::InProgress,
+            self::InProgress => self::Resolved,
+            self::Resolved => self::Closed,
+            self::Closed => null,
+        };
+    }
 }

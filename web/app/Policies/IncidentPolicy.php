@@ -42,6 +42,18 @@ class IncidentPolicy
         return false;
     }
 
+    public function assignTechnician(User $user, Incident $incident): bool
+    {
+        return $user->hasRole(UserRole::Admin);
+    }
+
+    public function changeStatus(User $user, Incident $incident): bool
+    {
+        return $user->hasRole(UserRole::Admin)
+            || ($user->hasRole(UserRole::Technician)
+                && $incident->assigned_technician_id === $user->getKey());
+    }
+
     /**
      * Determine whether the user can delete the model.
      */
