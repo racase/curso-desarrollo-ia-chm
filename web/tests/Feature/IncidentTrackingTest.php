@@ -37,7 +37,11 @@ class IncidentTrackingTest extends TestCase
 
         $technician->delete();
 
-        $this->assertNull($incident->refresh()->assigned_technician_id);
+        $incident->refresh();
+
+        $this->assertSame($technician->getKey(), $incident->assigned_technician_id);
+        $this->assertTrue($incident->assignedTechnician->is($technician));
+        $this->assertTrue($incident->assignedTechnician->trashed());
 
         $incident->delete();
 

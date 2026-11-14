@@ -8,7 +8,6 @@ use App\Models\IncidentComment;
 use App\Models\User;
 use App\Services\IncidentCommentService;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -53,14 +52,16 @@ class IncidentCommentTest extends TestCase
         $this->assertDatabaseCount(IncidentComment::class, 0);
     }
 
-    public function test_an_author_cannot_be_deleted_while_their_comment_exists(): void
+    public function test_a_soft_deleted_author_remains_visible_on_their_comment(): void
     {
-        $author = User::factory()->create();
-        IncidentComment::factory()->by($author)->create();
-
-        $this->expectException(QueryException::class);
+        $author = User::factory()->create(['name' => 'Autor eliminado']);
+        $comment = IncidentComment::factory()->by($author)->create();
 
         $author->delete();
+
+        $this->assertSoftDeleted($author);
+        $this->assertTrue($comment->fresh()->author->is($author));
+        $this->assertSame('Autor eliminado', $comment->fresh()->author->name);
     }
 
     public function test_every_user_who_can_view_an_incident_can_publish_as_themselves(): void

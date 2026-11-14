@@ -24,7 +24,7 @@ class IncidentStatusChange extends Model
     /** @return BelongsTo<User, $this> */
     public function changedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'changed_by_id');
+        return $this->belongsTo(User::class, 'changed_by_id')->withTrashed();
     }
 
     /** @return array<string, string> */

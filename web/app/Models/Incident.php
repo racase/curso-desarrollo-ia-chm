@@ -20,13 +20,13 @@ class Incident extends Model
     /** @return BelongsTo<User, $this> */
     public function requester(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'requester_id');
+        return $this->belongsTo(User::class, 'requester_id')->withTrashed();
     }
 
     /** @return BelongsTo<User, $this> */
     public function assignedTechnician(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_technician_id');
+        return $this->belongsTo(User::class, 'assigned_technician_id')->withTrashed();
     }
 
     /** @return HasMany<IncidentStatusChange, $this> */
